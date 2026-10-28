@@ -1,0 +1,37 @@
+```
+Splunk SPL versions of the Sigma rules in ../sigma
+Assumes: Windows Security/System logs in index=wineventlog,
+Sysmon in index=sysmon (sourcetype XmlWinEventLog:Microsoft-Windows-Sysmon/Operational).
+Adjust index/sourcetype names to your environment.
+```
+
+``` ===== T1110 - Brute force: 10+ failed logons from one source in 5 minutes ===== ```
+index=wineventlog EventCode=4625 (Logon_Type=3 OR Logon_Type=10)
+| bin _time span=5m
+| stats count AS failures dc(Account_Name) AS users values(Account_Name) AS targeted_accounts BY _time, Source_Network_Address
+| where failures >= 10
+| eval technique=if(users > 5, "Password spraying", "Brute force")
+| sort - failures
+
+``` ===== T1059.001 - Encoded PowerShell ===== ```
+index=sysmon EventCode=1 (Image="*\\powershell.exe" OR Image="*\\pwsh.exe")
+| regex CommandLine="(?i)\s-(e|ec|enc|encodedcommand)\s"
+| table _time host User ParentImage Image CommandLine
+
+``` ===== T1053.005 - Scheduled task created ===== ```
+index=sysmon EventCode=1 Image="*\\schtasks.exe" CommandLine="*/create*"
+| table _time host User ParentImage CommandLine
+
+``` ===== T1136.001 - Local account created ===== ```
+index=wineventlog EventCode=4720
+| table _time host SAM_Account_Name Subject_Account_Name
+
+``` ===== T1003.001 - LSASS access ===== ```
+index=sysmon EventCode=10 TargetImage="*\\lsass.exe"
+    (GrantedAccess=0x1010 OR GrantedAccess=0x1410 OR GrantedAccess=0x1438 OR GrantedAccess=0x143a OR GrantedAccess=0x1fffff)
+    NOT SourceImage="C:\\Windows\\System32\\*"
+| table _time host SourceImage GrantedAccess CallTrace
+
+``` ===== T1543.003 - New service installed ===== ```
+index=wineventlog source="WinEventLog:System" EventCode=7045
+| table _time host Service_Name Service_File_Name Service_Account

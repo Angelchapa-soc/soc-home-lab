@@ -1,0 +1,28 @@
+title: Encoded PowerShell Command Line
+id: 7f3c2a10-4b1e-4d6a-9f2b-1a2b3c4d5e01
+status: experimental
+description: Detects PowerShell launched with an encoded command, a common way attackers hide malicious scripts.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: Angel Medina
+date: 2026-10-28
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_cli:
+    CommandLine|contains:
+      - ' -enc '
+      - ' -encodedcommand '
+      - ' -ec '
+  condition: selection_img and selection_cli
+falsepositives:
+  - Some admin and deployment tools (SCCM, Intune scripts) use encoded commands
+level: high

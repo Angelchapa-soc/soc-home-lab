@@ -1,0 +1,31 @@
+title: Suspicious Access to LSASS Memory
+id: 7f3c2a10-4b1e-4d6a-9f2b-1a2b3c4d5e05
+status: experimental
+description: Detects processes opening LSASS with access rights commonly used to dump credentials.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: Angel Medina
+date: 2026-10-28
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  category: process_access
+  product: windows
+detection:
+  selection:
+    TargetImage|endswith: '\lsass.exe'
+    GrantedAccess|contains:
+      - '0x1010'
+      - '0x1410'
+      - '0x1438'
+      - '0x143a'
+      - '0x1fffff'
+  filter_system:
+    SourceImage|startswith:
+      - 'C:\Windows\System32\'
+      - 'C:\Program Files\Windows Defender\'
+  condition: selection and not filter_system
+falsepositives:
+  - EDR and antivirus products
+level: high

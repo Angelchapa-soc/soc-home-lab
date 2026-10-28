@@ -24,18 +24,24 @@ Network: isolated host-only network (no internet exposure).
 - [ ] **Phase 1 – Build:** VMs, domain, Sysmon (SwiftOnSecurity / Olaf config), log forwarding to the SIEM
 - [ ] **Phase 2 – Baseline:** document normal activity and key Windows Event IDs (4624, 4625, 4688, 4720, 7045…)
 - [ ] **Phase 3 – Attack & Detect:** one write-up per technique (see table below)
-- [ ] **Phase 4 – Automate:** Python script for alert notifications and a daily summary report
+- [x] **Phase 4 – Automate:** [`alert_report.py`](scripts/alert_report.py) builds a daily Excel alert report (by severity, technique and host) and emails it
 - [ ] **Phase 5 – OT bonus:** OpenPLC + Modbus traffic and detection of unauthorized writes
 
+Setup guide: [docs/01-lab-setup.md](docs/01-lab-setup.md)
+
 ## 🔍 Detections
-| ATT&CK ID | Technique | Simulation | Detection | Write-up |
-|---|---|---|---|---|
-| T1110 | Brute Force | Failed logons against WS01 | Many 4625 events from one source | _pending_ |
-| T1059.001 | PowerShell | Encoded PowerShell command | Sysmon EID 1 with `-enc` | _pending_ |
-| T1053.005 | Scheduled Task | `schtasks /create` persistence | EID 4698 / Sysmon EID 1 | _pending_ |
-| T1136.001 | Create Local Account | `net user /add` | EID 4720 | _pending_ |
-| T1003.001 | LSASS Memory | Access to lsass.exe | Sysmon EID 10 | _pending_ |
-| T1543.003 | Windows Service | New service installed | EID 7045 | _pending_ |
+Each technique has a **Sigma** rule plus **Splunk SPL** and **CrowdStrike LogScale (LQL)** versions. Rules are drafts until validated against lab telemetry.
+
+| ATT&CK ID | Technique | Simulation | Telemetry | Sigma | Write-up |
+|---|---|---|---|---|---|
+| T1110 | Brute Force | Failed logons against WS01 | EID 4625 | [rule](detections/sigma/t1110_failed_logons.yml) | _pending_ |
+| T1059.001 | PowerShell | Encoded PowerShell command | Sysmon EID 1 | [rule](detections/sigma/t1059_001_encoded_powershell.yml) | _pending_ |
+| T1053.005 | Scheduled Task | `schtasks /create` persistence | Sysmon EID 1 / EID 4698 | [rule](detections/sigma/t1053_005_scheduled_task.yml) | _pending_ |
+| T1136.001 | Create Local Account | `net user /add` | EID 4720 | [rule](detections/sigma/t1136_001_local_account_created.yml) | _pending_ |
+| T1003.001 | LSASS Memory | Access to lsass.exe | Sysmon EID 10 | [rule](detections/sigma/t1003_001_lsass_access.yml) | _pending_ |
+| T1543.003 | Windows Service | New service installed | EID 7045 | [rule](detections/sigma/t1543_003_new_service.yml) | _pending_ |
+
+All SPL searches: [detections/spl/windows_detections.spl](detections/spl/windows_detections.spl) · All LQL queries: [detections/lql/falcon_detections.lql](detections/lql/falcon_detections.lql)
 
 ## 📁 Repository layout
 ```

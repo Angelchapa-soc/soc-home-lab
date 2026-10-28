@@ -1,0 +1,21 @@
+title: New Windows Service Installed
+id: 7f3c2a10-4b1e-4d6a-9f2b-1a2b3c4d5e06
+status: experimental
+description: Detects new service installation (7045), used for persistence and lateral movement (e.g. PsExec).
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: Angel Medina
+date: 2026-10-28
+tags:
+  - attack.persistence
+  - attack.t1543.003
+logsource:
+  product: windows
+  service: system
+detection:
+  selection:
+    EventID: 7045
+  condition: selection
+falsepositives:
+  - Software installations and updates
+level: medium

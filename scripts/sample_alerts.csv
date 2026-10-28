@@ -1,0 +1,7 @@
+time,host,rule,technique,severity,user,details
+2026-10-28T08:12:44Z,WS01,Encoded PowerShell Command Line,T1059.001,high,lab\jdoe,powershell.exe -enc SQBFAFgA...
+2026-10-28T08:15:02Z,WS01,Scheduled Task Created via schtasks,T1053.005,medium,lab\jdoe,schtasks /create /tn Updater
+2026-10-28T09:01:10Z,DC01,Multiple Failed Logons From a Single Source,T1110,medium,-,23 failures from 10.0.0.50
+2026-10-28T09:30:51Z,WS01,Suspicious Access to LSASS Memory,T1003.001,critical,lab\jdoe,GrantedAccess 0x1010
+2026-10-28T10:05:33Z,DC01,Local User Account Created,T1136.001,medium,lab\admin,new user: svc_backup
+2026-10-28T10:40:12Z,WS01,New Windows Service Installed,T1543.003,low,SYSTEM,Service: PSEXESVC

@@ -1,0 +1,30 @@
+// CrowdStrike Falcon LogScale (LQL) versions of the Sigma rules in ../sigma
+// Written against Falcon sensor telemetry (#event_simpleName). Field names can vary by
+// data source and sensor version — validate in your tenant before using as alerts.
+
+// ===== T1059.001 - Encoded PowerShell =====
+#event_simpleName=ProcessRollup2
+| ImageFileName=/\\(powershell|pwsh)\.exe$/i
+| CommandLine=/\s-(e|ec|enc|encodedcommand)\s/i
+| table([@timestamp, ComputerName, UserName, ParentBaseFileName, CommandLine])
+
+// ===== T1110 - Failed logons from one source (10+ in 5 minutes) =====
+#event_simpleName=UserLogonFailed2
+| bucket(span=5m, field=RemoteAddressIP4, function=count(as=failures))
+| failures >= 10
+
+// ===== T1053.005 - Scheduled task created =====
+#event_simpleName=ProcessRollup2
+| ImageFileName=/\\schtasks\.exe$/i
+| CommandLine=/\/create/i
+| table([@timestamp, ComputerName, UserName, CommandLine])
+
+// ===== T1136.001 - Local account created =====
+#event_simpleName=UserAccountCreated
+| table([@timestamp, ComputerName, UserName])
+
+// ===== T1543.003 - New service installed =====
+#event_simpleName=ProcessRollup2
+| ImageFileName=/\\sc\.exe$/i
+| CommandLine=/\screate\s/i
+| table([@timestamp, ComputerName, UserName, CommandLine])

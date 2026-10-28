@@ -1,0 +1,25 @@
+title: Multiple Failed Logons From a Single Source
+id: 7f3c2a10-4b1e-4d6a-9f2b-1a2b3c4d5e02
+status: experimental
+description: Detects failed logon events (4625). Combine with a threshold (see SPL/LQL versions) to flag brute force or password spraying.
+references:
+  - https://attack.mitre.org/techniques/T1110/
+author: Angel Medina
+date: 2026-10-28
+tags:
+  - attack.credential_access
+  - attack.t1110
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+    LogonType:
+      - 3
+      - 10
+  condition: selection
+falsepositives:
+  - Users mistyping passwords
+  - Service accounts with expired credentials
+level: medium
